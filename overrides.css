@@ -1,0 +1,16 @@
+.category {
+  color: var(--text);
+}
+
+.category strong,
+.category .icon {
+  color: #fff;
+}
+
+.category .icon {
+  filter: brightness(2.2) grayscale(1);
+}
+
+.category small {
+  color: #d9e6f4;
+}

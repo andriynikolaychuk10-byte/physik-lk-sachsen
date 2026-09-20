@@ -1,0 +1,150 @@
+body.light {
+  --bg: #f4f7fb;
+  --surface: #fff;
+  --surface2: #e8eef7;
+  --line: #b7c6d8;
+  --text: #071725;
+  --muted: #273c50;
+  background:
+    radial-gradient(circle at 85% 0, #d8edff 0, transparent 30rem), #f4f7fb;
+  color: #071725;
+}
+body.light .sidebar {
+  background: #f9fbffeb;
+  border-color: #b7c6d8;
+}
+body.light .brand,
+body.light .brand small,
+body.light .nav button,
+body.light .mode,
+body.light .page-title,
+body.light h1,
+body.light h2,
+body.light h3,
+body.light strong {
+  color: #071725;
+}
+body.light .nav button:hover,
+body.light .nav button.active {
+  background: #dce8f6;
+  color: #071725;
+}
+body.light .mode {
+  background: #fff;
+  border-color: #9eb2c7;
+}
+body.light .category {
+  background: #fff;
+  color: #071725;
+  border-color: #b7c6d8;
+}
+body.light .category strong,
+body.light .category .icon {
+  color: #071725;
+}
+body.light .category .icon {
+  filter: grayscale(1) brightness(0.25);
+}
+body.light .category small,
+body.light .formula-card p,
+body.light .section-head p,
+body.light .muted {
+  color: #273c50;
+}
+body.light .formula-card,
+body.light .info-box,
+body.light .calculator,
+body.light .constant-table {
+  background: #fff;
+  border-color: #b7c6d8;
+}
+body.light .formula {
+  color: #071725;
+  background: #eef4fa;
+}
+body.light .tag {
+  color: #153c58;
+  background: #ddecf7;
+}
+body.light .searchbar {
+  background: #fff;
+  border-color: #9eb2c7;
+}
+body.light .searchbar input,
+body.light input,
+body.light textarea,
+body.light select {
+  color: #071725;
+  background: #fff;
+}
+body.light .detail-hero,
+.light .formula-day {
+  background: linear-gradient(120deg, #e4f4fb, #eae9ff);
+  border-color: #9dbbd2;
+}
+.light .formula-day p {
+  color: #273c50;
+}
+.light .eyebrow {
+  color: #07576c;
+}
+.light #site-footer {
+  color: #273c50;
+  background: #eef4fa;
+  border-color: #b7c6d8;
+}
+.light dialog {
+  background: #fff;
+  color: #071725;
+}
+.light .learn-block {
+  background: #eef4fa;
+}
+.light .favorite {
+  color: #334f67;
+}
+.light .favorite.is-favorite {
+  color: #9b6000;
+}
+body.light .button,
+body.light .button.primary,
+body.light .button.ghost,
+body.light .button.danger,
+body.light .mode,
+body.light .filters button,
+body.light .card-actions button,
+body.light .dialog-actions button {
+  background: #fff;
+  color: #071725;
+  border: 1px solid #9eb2c7;
+}
+body.light .button:hover,
+body.light .mode:hover,
+body.light .filters button:hover,
+body.light .card-actions button:hover {
+  background: #edf5fc;
+  color: #071725;
+}
+body.light .button.danger {
+  color: #8a1421;
+  border-color: #d7a4aa;
+}
+body.light .button.primary {
+  font-weight: 700;
+  border-color: #6b9fbd;
+}
+body.light .favorite {
+  background: transparent;
+  border: 0;
+}
+body.light .favorite:hover {
+  background: #edf5fc;
+}
+body.light .filters select {
+  background: #fff;
+  color: #071725;
+  border-color: #9eb2c7;
+}
+.side-footer .mode + .mode {
+  margin-top: 8px;
+}
