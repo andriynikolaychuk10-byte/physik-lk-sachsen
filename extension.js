@@ -1175,7 +1175,7 @@
         .querySelector('.app-shell')
         .insertAdjacentHTML(
           'afterend',
-          '<footer id="site-footer">Erstellt von Andrii Nikolaichuk</footer>',
+          '<footer id="site-footer">Erstellt von Andrii</footer>',
         );
   }
   function localizeTerminology() {

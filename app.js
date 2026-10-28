@@ -388,7 +388,7 @@ const seed = [
     'U=RI',
     'Elektrizitätslehre',
     'Spannung an einem ohmschen Widerstand',
-    'U [V]; R [Ω]; I [A]',
+    'U [V]; R [Ohm]; I [A]',
     'Ohmsche Leiter bei konstanter Temperatur',
     'Widerstand, Strom',
   ],
@@ -747,7 +747,7 @@ function filtered() {
 function home() {
   const recent = state.recent.map(byId).filter(Boolean).slice(0, 4);
   const popular = [...all()].sort((a, b) => b.used - a.used).slice(0, 4);
-  return `<section class="hero"><span class="eyebrow">DEINE LERNZENTRALE</span><h1>Formeln verstehen.<br>Physik rechnen.</h1><p>Eine klare Sammlung für den Physik-Leistungskurs.</p>${search()}</section><section><div class="section-head"><div><h2>Fachgebiete</h2><p>Wähle ein Thema und entdecke passende Formeln.</p></div></div><div class="category-grid">${CATEGORIES.map((c, i) => `<button class="category" data-category="${c}"><span class="icon">${ICONS[i]}</span><strong>${c}</strong><small>${all().filter((f) => f.category === c).length} Formeln</small></button>`).join('')}</div></section>${cardsSection('Zuletzt angesehen', recent)}${cardsSection('Häufig verwendete Formeln', popular)}`;
+  return `<section class="hero"><h1>Gleichungen verstehen.<br>Physik rechnen.</h1>${search()}</section><section><div class="section-head"><div><h2>Fachgebiete</h2><p>Wähle ein Thema und entdecke passende Formeln.</p></div></div><div class="category-grid">${CATEGORIES.map((c, i) => `<button class="category" data-category="${c}"><span class="icon">${ICONS[i]}</span><strong>${c}</strong><small>${all().filter((f) => f.category === c).length} Formeln</small></button>`).join('')}</div></section>${cardsSection('Zuletzt angesehen', recent)}${cardsSection('Häufig verwendete Gleichungen', popular)}`;
 }
 function cardsSection(title, list) {
   return list.length
@@ -816,24 +816,60 @@ function mine() {
   return `<section><div class="section-head"><div><h1 class="page-title">Meine Formeln</h1><p>Eigene Formeln verwalten und sichern.</p></div>${state.editing ? '<button class="button primary" onclick="openFormula()">+ Neue Formel</button>' : ''}</div>${!state.editing ? '<div class="empty">Aktiviere den Bearbeitungsmodus, um eigene Formeln anzulegen oder zu verändern.</div>' : ''}<div class="filters">${state.editing ? '<button class="button" data-export>Formeln exportieren</button><button class="button" data-import>Formeln importieren</button><button class="button" data-sort="popular">Häufig verwendet</button><button class="button" data-sort="recent">Zuletzt hinzugefügt</button>' : ''}</div><div class="formula-grid">${items.map(formulaCard).join('') || '<div class="empty">Noch keine eigenen Formeln angelegt.</div>'}</div></section>`;
 }
 function calculator() {
-  const options = [
-    ['Kinetische Energie', 'E_{kin}', 'm,v', '0.5*m*v*v', 'J'],
-    ['Gewichtskraft', 'F_G', 'm,g', 'm*g', 'N'],
-    ['Ohmsches Gesetz', 'U', 'R,I', 'R*I', 'V'],
-    ['Elektrische Leistung', 'P', 'U,I', 'U*I', 'W'],
-    ['Wärmemenge', 'Q', 'm,c,dT', 'm*c*dT', 'J'],
-  ];
-  return `<section><div class="section-head"><div><h1 class="page-title">Physik-Rechner</h1><p>Setze Werte ein und berechne einfache Standardformeln.</p></div></div><div class="calculator"><label>Formel auswählen<select id="calc-select">${options.map((o, i) => `<option value="${i}">${o[0]}</option>`).join('')}</select></label><div id="calc-area"></div></div></section>`;
+  return `<section><div class="section-head"><div><h1 class="page-title">Physik-Rechner</h1><p>Setze Werte ein und berechne einfache Standardformeln.</p></div></div><div class="calculator"><label>Formel auswählen<select id="calc-select">${calcOptions.map((o, i) => `<option value="${i}">${o[0]}</option>`).join('')}</select></label><div id="calc-area"></div></div></section>`;
 }
+
+const calcOptions = [
+  // Energie und Mechanik
+  ['Kinetische Energie', 'E_{kin}', 'm,v', '0.5*m*v*v', 'J'],
+  ['Gewichtskraft', 'F_G', 'm,g', 'm*g', 'N'],
+  ['Potenzielle Energie', 'E_{pot}', 'm,g,h', 'm*g*h', 'J'],
+  ['Beschleunigung', 'a', 'v,v0,t', '(v-v0)/t', 'm/s^2'],
+  ['Geschwindigkeit', 'v', 'v0,a,t', 'v0+a*t', 'm/s'],
+  ['Weg bei konstanter Beschleunigung', 's', 'v0,t,a', 'v0*t+0.5*a*t*t', 'm'],
+  ['Impuls', 'p', 'm,v', 'm*v', 'kg*m/s'],
+  ['Kraft (Newton II)', 'F', 'm,a', 'm*a', 'N'],
+  ['Zentripetalkraft', 'F_z', 'm,v,r', 'm*v*v/r', 'N'],
+  ['Zentripetalbeschleunigung', 'a_z', 'v,r', 'v*v/r', 'm/s^2'],
+  ['Reibungskraft', 'F_R', 'mu,F_N', 'mu*F_N', 'N'],
+  ['Arbeit', 'W', 'F,s', 'F*s', 'J'],
+  ['Leistung (Mechanik)', 'P', 'F,v', 'F*v', 'W'],
+  ['Federkraft', 'F_F', 'k,x', '-k*x', 'N'],
+  ['Federenergie', 'E_F', 'k,x', '0.5*k*x*x', 'J'],
+
+  // Kreisbewegung und Gravitation
+  ['Bahngeschwindigkeit', 'v', 'G,M,r', 'Math.sqrt(G*M/r)', 'm/s'],
+  ['Umlaufzeit', 'T', 'r,v', '2*Math.PI*r/v', 's'],
+  ['Gravitationskraft', 'F_G', 'G,m1,m2,r', 'G*m1*m2/(r*r)', 'N'],
+
+  // Elektrizität
+  ['Ohmsches Gesetz', 'U', 'R,I', 'R*I', 'V'],
+  ['Elektrische Spannung', 'U', 'E_el,q', 'E_el/q', 'V'],
+  ['Elektrischer Widerstand', 'R', 'U,I', 'U/I', 'Ohm'],
+  ['Elektrische Leistung', 'P', 'U,I', 'U*I', 'W'],
+  ['Elektrische Ladung', 'Q', 'I,t', 'I*t', 'C'],
+  ['Elektrische Energie', 'E_el', 'U,I,t', 'U*I*t', 'J'],
+  ['Reihenwiderstand', 'R_{ges}', 'R1,R2,R3', 'R1+R2+R3', 'Ohm'],
+  ['Paralleler Widerstand', 'R_{ges}', 'R1,R2,R3', '1/(1/R1+1/R2+1/R3)', 'Ohm'],
+  ['Coulomb-Kraft', 'F_C', 'k,q1,q2,r', 'k*q1*q2/(r*r)', 'N'],
+
+  // Schwingungen und Wellen
+  ['Wellenlänge', '\\lambda', 'v,f', 'v/f', 'm'],
+  ['Frequenz', 'f', 'v,lambda', 'v/lambda', 'Hz'],
+  ['Fadenpendel – Periodendauer', 'T', 'l,g', '2*Math.PI*Math.sqrt(l/g)', 's'],
+  ['Federpendel – Periodendauer', 'T', 'm,k', '2*Math.PI*Math.sqrt(m/k)', 's'],
+
+  // Wärmelehre
+  ['Wärmemenge', 'Q', 'm,c,dT', 'm*c*dT', 'J'],
+  ['Temperaturänderung', '\\Delta T', 'Q,m,c', 'Q/(m*c)', 'K'],
+  ['Wärmekapazität', 'C', 'Q,dT', 'Q/dT', 'J/K'],
+
+  // Wirkungsgrad
+  ['Wirkungsgrad', '\\eta', 'E_nutz,E_zu', '100*E_nutz/E_zu', '%']
+];
+
 function calcArea() {
-  const options = [
-    ['Kinetische Energie', 'E_{kin}', 'm,v', '0.5*m*v*v', 'J'],
-    ['Gewichtskraft', 'F_G', 'm,g', 'm*g', 'N'],
-    ['Ohmsches Gesetz', 'U', 'R,I', 'R*I', 'V'],
-    ['Elektrische Leistung', 'P', 'U,I', 'U*I', 'W'],
-    ['Wärmemenge', 'Q', 'm,c,dT', 'm*c*dT', 'J'],
-  ];
-  const o = options[document.querySelector('#calc-select').value];
+  const o = calcOptions[document.querySelector('#calc-select').value];
   document.querySelector('#calc-area').innerHTML = `<div class="calc-fields">${o[2]
     .split(',')
     .map(
@@ -870,6 +906,53 @@ function help() {
     .map(([h, p]) => `<article class="info-box"><h3>${h}</h3><p>${p}</p></article>`)
     .join('')}</section>`;
 }
+function renderLatexText(text) {
+  if (!text) return '';
+
+  const t = String(text)
+    .replace(/[＄﹩]/g, '$')
+    .replace(/\\\$/g, '$');
+
+  const tex = (latex, displayMode) => {
+    try {
+      if (!window.katex) throw new Error('katex fehlt');
+      return katex.renderToString(latex.trim(), { throwOnError: false, displayMode });
+    } catch {
+      return esc(latex);
+    }
+  };
+
+  return t
+    .split(/(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$[^$]+\$)/g)
+    .map((p) => {
+      if (!p) return '';
+      if (p.startsWith('$$') && p.endsWith('$$') && p.length > 3) return tex(p.slice(2, -2), true);
+      if (p.startsWith('\\[')) return tex(p.slice(2, -2), true);
+      if (p.startsWith('\\(')) return tex(p.slice(2, -2), false);
+      if (p.startsWith('$') && p.endsWith('$') && p.length > 1) return tex(p.slice(1, -1), false);
+      return esc(p).replace(/\n/g, '<br>');
+    })
+    .join('');
+}
+function sortExerciseTasks(tasks) {
+  return [...(tasks || [])].sort((a, b) => {
+    const first = String(a.task_number ?? '').trim();
+    const second = String(b.task_number ?? '').trim();
+
+    const firstIsNumber = /^\d+(?:[.,]\d+)?$/.test(first);
+    const secondIsNumber = /^\d+(?:[.,]\d+)?$/.test(second);
+
+    if (firstIsNumber && secondIsNumber) {
+      return Number(first.replace(',', '.')) -
+        Number(second.replace(',', '.'));
+    }
+
+    return first.localeCompare(second, 'de', {
+      numeric: true,
+      sensitivity: 'base'
+    });
+  });
+}
   function renderExerciseTasks(tasks) {
   const list = document.querySelector('.exercise-task-list');
 
@@ -891,61 +974,78 @@ function help() {
     list.innerHTML = progressHtml + (
     tasks && tasks.length
     ? tasks.map((task) => `
-        <article class="exercise-task-card">
-          <h2>Aufgabe ${task.task_number}${task.title ? ` – ${task.title}` : ''}</h2>
-          <p>${task.question || ''}</p>
+      <article class="exercise-task-card">
+        <h2>Aufgabe ${esc(task.task_number)}${task.title ? ` – ${renderLatexText(task.title)}` : ''}</h2>
 
-          <div class="exercise-solution" data-exercise-solution="${task.id}" hidden>
-            <strong>Lösungsweg</strong>
-            <p>${task.solution || 'Keine Lösung hinterlegt.'}</p>
+        <div class="exercise-task-left">
+          <div class="exercise-question">
+            ${renderLatexText(task.question)}
           </div>
 
-          <div class="exercise-answer">
-            <div class="exercise-target">
-              <span>Gesucht:</span>
-              <span class="exercise-variable">
-                ${task.variable ? katex.renderToString(task.variable, { throwOnError: false }) : ''}
-              </span>
-              <span class="exercise-operator">${{
-                '=': '=',
-                '>': '>',
-                '<': '<',
-                '<=': '≤',
-                '>=': '≥',
-                approx: '≈'
-              }[task.operator || '=']}</span>
+          ${
+            task.image_url
+              ? `<img
+                  src="${task.image_url}"
+                  alt="Bild zur Aufgabe"
+                  class="exercise-task-image"
+                />`
+              : ''
+          }
+        </div>
+
+        <div class="exercise-solution" data-exercise-solution="${task.id}" hidden>
+          <strong><h2>Lösungsweg</h2></strong>
+          <div class="exercise-solution-content">
+            ${renderLatexText(task.solution)}
+          </div>
+        </div>
+
+        <div class="exercise-answer">
+          <div class="exercise-target exercise-target-large">
+            <span>Gesucht:</span>
+            <span class="exercise-variable">
+              ${task.variable ? katex.renderToString(task.variable, { throwOnError: false }) : ''}
+            </span>
+            <span class="exercise-operator">${{
+              '=': '=',
+              '>': '>',
+              '<': '<',
+              '<=': '≤',
+              '>=': '≥',
+              approx: '≈'
+            }[task.operator || '=']}</span>
+          </div>
+
+          <label>
+            Deine Antwort
+            <div class="exercise-answer-input">
+              <input
+                type="text"
+                data-exercise-answer="${task.id}"
+                placeholder="z. B. 12,5 m/s"
+              />
             </div>
+          </label>
 
-            <label>
-              Deine Antwort
-              <div class="exercise-answer-input">
-                <input
-                  type="text"
-                  data-exercise-answer="${task.id}"
-                  placeholder="z. B. 12,5 m/s"
-                />
-              </div>
-            </label>
+          <button class="button primary" data-exercise-check="${task.id}">
+            Prüfen
+          </button>
 
-            <button class="button primary" data-exercise-check="${task.id}">
-              Prüfen
-            </button>
+          ${
+            state.editing
+              ? `<button class="button" data-exercise-task-edit="${task.id}">
+                  Bearbeiten
+                </button>
+                <button class="button danger" data-exercise-task-delete="${task.id}">
+                  Löschen
+                </button>`
+              : ''
+          }
+        </div>
 
-            ${
-              state.editing
-                ? `<button class="button" data-exercise-task-edit="${task.id}">
-                    Bearbeiten
-                  </button>
-                  <button class="button danger" data-exercise-task-delete="${task.id}">
-                    Löschen
-                  </button>`
-                : ''
-            }
-          </div>
-
-          <div data-exercise-feedback="${task.id}"></div>
-        </article>
-      `).join('')
+        <div data-exercise-feedback="${task.id}"></div>
+      </article>
+    `).join('')
     : '<p class="muted">Für diese LK wurden noch keine Aufgaben erstellt.</p>');
   }
   function updateExerciseProgress() {
@@ -1000,11 +1100,11 @@ function help() {
 
     list.innerHTML = data.map((lk) => `
       <article class="exercise-lk-card">
-        <h2>${lk.title}</h2>
-        <p class="muted">${lk.description || ''}</p>
+        <h2>${renderLatexText(lk.title)}</h2>
+        <p class="muted">${renderLatexText(lk.description || '')}</p>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="button primary" data-exercise-open="${lk.id}">
-              Öffnen →
+              Öffnen
             </button>
 
             ${
@@ -1024,6 +1124,7 @@ function help() {
       </article>
     `).join('');
   }
+//Open
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-open]');
   if (!b) return;
@@ -1051,7 +1152,6 @@ document.addEventListener('click', async (e) => {
     .from('exercise_tasks')
     .select('*')
     .eq('lk_id', lkId)
-    .order('task_number', { ascending: true });
 
   if (taskError) {
     console.error('Fehler beim Laden der Aufgaben:', taskError);
@@ -1063,8 +1163,8 @@ document.addEventListener('click', async (e) => {
     <section class="exercise-detail-page">
       <button class="button" data-exercise-back>← Zurück</button>
 
-      <h1>${lk.title}</h1>
-      <p class="muted">${lk.description || ''}</p>
+      <h1>${renderLatexText(lk.title)}</h1>
+      <p class="muted">${renderLatexText(lk.description || '')}</p>
       ${
         state.editing
           ? `<button class="button primary" data-exercise-task-new="${lk.id}">＋ Aufgabe hinzufügen</button>`
@@ -1073,13 +1173,12 @@ document.addEventListener('click', async (e) => {
       <div class="exercise-task-list"></div>  
     </section>
   `;
-  renderExerciseTasks(tasks);
+  renderExerciseTasks(sortExerciseTasks(tasks));
 });
-  document.addEventListener('click', async (e) => {
+//Check
+document.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-exercise-check]');
     if (!b) return;
-
-    console.log('Prüfen-Button geklickt');
 
     const taskId = b.dataset.exerciseCheck;
 
@@ -1092,6 +1191,10 @@ document.addEventListener('click', async (e) => {
     );
 
     const userInput = input?.value.trim();
+    input?.classList.remove(
+      'exercise-answer-correct',
+      'exercise-answer-wrong'
+    );
     if (!userInput) {
       feedback.innerHTML = '<p class="muted">Bitte gib eine Antwort ein.</p>';
     return;
@@ -1100,7 +1203,7 @@ document.addEventListener('click', async (e) => {
 
   if (!match) {
     feedback.innerHTML =
-      '<p class="muted">Bitte gib eine Zahl und eine Einheit ein.</p>';
+      '<p class="muted">Bitte gib eine gültige Zahl ein, ggf. mit Einheit.</p>';
     return;
   }
 
@@ -1119,37 +1222,721 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-const normalizeUnit = (unit) =>
-  (unit || '')
+const normalizeUnit = (unit) => {
+  let u = (unit || '')
     .trim()
-    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/·/g, '*');
+
+  // Unicode-Hochzahlen
+  const superscriptMap = {
+    '⁰': '0',
+    '¹': '1',
+    '²': '2',
+    '³': '3',
+    '⁴': '4',
+    '⁵': '5',
+    '⁶': '6',
+    '⁷': '7',
+    '⁸': '8',
+    '⁹': '9',
+    '⁻': '-'
+  };
+
+  u = u.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (match) => {
+    const normal = [...match]
+      .map((char) => superscriptMap[char] || char)
+      .join('');
+
+    return `^${normal}`;
+  });
+
+  // Klammern entfernen
+  u = u.replace(/[()]/g, '');
+  // SI-Präfixe nicht von der Basiseinheit trennen
+  u = u.replace(/([kMGTP])(?=Pa|Hz|Wb|N|J|W|A|K|C|V|T|m|s)/g, '$1');
+
+  // Bekannte Einheiten – längere zuerst
+  const units = [
+    'mol',
+    'cd',
+    'kg',
+    'Pa',
+    'Hz',
+    'Wb',
+    'ohm',
+    'N',
+    'J',
+    'W',
+    'A',
+    'K',
+    'g',
+    'm',
+    's',
+    'C',
+    'V',
+    'T',
+    'L',
+    'µ'
+  ].sort((a, b) => b.length - a.length);
+
+  const powers = {};
+
+  const parseFactors = (text, sign) => {
+    let i = 0;
+    
+    while (i < text.length) {
+      if (text[i] === '*') {
+        i++;
+        continue;
+      }
+
+      let foundUnit = null;
+
+      for (const candidate of units) {
+        if (text.startsWith(candidate, i)) {
+          foundUnit = candidate;
+          break;
+        }
+      }
+
+      // Falls keine Einheit direkt erkannt wurde: SI-Präfix prüfen
+      if (!foundUnit) {
+        const prefixes = [
+          ['da', 1e1],
+          ['k', 1e3],
+          ['h', 1e2],
+          ['M', 1e6],
+          ['G', 1e9],
+          ['d', 1e-1],
+          ['c', 1e-2],
+          ['m', 1e-3],
+          ['µ', 1e-6],
+          ['n', 1e-9],
+          ['p', 1e-12]
+        ];
+
+        for (const [prefix] of prefixes) {
+          if (!text.startsWith(prefix, i)) continue;
+
+          const rest = text.slice(i + prefix.length);
+          const baseUnit = units.find(candidate => rest.startsWith(candidate));
+
+          if (baseUnit) {
+            foundUnit = baseUnit;
+            i += prefix.length;
+            break;
+          }
+        }
+      }
+
+      if (!foundUnit) {
+        return false;
+      }
+
+      i += foundUnit.length;
+
+      let exponent = 1;
+
+      if (text[i] === '^') {
+        i++;
+
+        const match = text.slice(i).match(/^-?\d+/);
+
+        if (!match) {
+          return false;
+        }
+
+        exponent = Number(match[0]);
+        i += match[0].length;
+      }
+
+      powers[foundUnit] =
+        (powers[foundUnit] || 0) + exponent * sign;
+    }
+
+    return true;
+  };
+
+  // Zähler und Nenner trennen
+  const slashIndex = u.indexOf('/');
+
+  if (slashIndex === -1) {
+    if (!parseFactors(u, 1)) {
+      return u;
+    }
+  } else {
+    const numerator = u.slice(0, slashIndex);
+    const denominator = u.slice(slashIndex + 1);
+
+    // Zähler positiv
+    if (!parseFactors(numerator, 1)) {
+      return u;
+    }
+
+    // Alles im Nenner negativ
+    if (!parseFactors(denominator, -1)) {
+      return u;
+    }
+  }
+
+  return Object.entries(powers)
+    .filter(([, exponent]) => exponent !== 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([base, exponent]) =>
+      exponent === 1
+        ? base
+        : `${base}^${exponent}`
+    )
+    .join('*');
+};
+const unitPrefixes = {
+  Y: 1e24,
+  Z: 1e21,
+  E: 1e18,
+  P: 1e15,
+  T: 1e12,
+  G: 1e9,
+  M: 1e6,
+  k: 1e3,
+  h: 1e2,
+  da: 1e1,
+  d: 1e-1,
+  c: 1e-2,
+  m: 1e-3,
+  µ: 1e-6,
+  n: 1e-9,
+  p: 1e-12,
+  f: 1e-15
+};
+
+const baseUnits = [
+  'mol',
+  'cd',
+  'kg',
+  'A',
+  'K',
+  'm',
+  's',
+  'T'
+];
+const specialUnitFactors = {
+  min: {
+    dimensions: { s: 1 },
+    factor: 60
+  },
+
+  h: {
+    dimensions: { s: 1 },
+    factor: 3600
+  },
+
+  d: {
+    dimensions: { s: 1 },
+    factor: 86400
+  },
+
+  g: {
+    dimensions: { kg: 1 },
+    factor: 0.001
+  },
+
+  L: {
+    dimensions: { m: 3 },
+    factor: 0.001
+  },
+
+  Pa: {
+    dimensions: { kg:1, m: -1, s: -2},
+    factor: 1
+  },
+
+  Hz: {
+    dimensions: { s: -1 },
+    factor: 1
+  },
+
+  N: {
+    dimensions: { kg: 1, m: 1, s: -2 },
+    factor: 1
+  },
+
+  J: {
+    dimensions: { kg: 1, m: 2, s: -2 },
+    factor: 1
+  },
+
+  W: {
+    dimensions: { kg: 1, m: 2, s: -3 },
+    factor: 1
+  },
+
+  C: {
+    dimensions: { A: 1, s: 1 },
+    factor: 1
+  },
+
+  V: {
+    dimensions: { kg: 1, m: 2, A: -1, s: -3 },
+    factor: 1
+  },
+
+  Ohm: {
+    dimensions: { kg: 1, m: 2, A: -2, s: -3 },
+    factor: 1
+  },
+
+  Wb: {
+    dimensions: { kg: 1, m: 2, A: -1, s: -2 },
+    factor: 1
+  },
+
+  bar: {
+    dimensions: { kg: 1, m: -1, s: -2 },
+    factor: 100000
+  },
+};
+const parseUnitFactor = (factor) => {
+  const specialUnit = specialUnitFactors[factor];
+
+  if (specialUnit) {
+    return {
+      unit: specialUnit.unit,
+      prefix: null,
+      factor: specialUnit.factor,
+      exponent: 1
+    };
+  }  
+  const match = factor.match(/^([a-zA-ZµΩ]+)(?:\^(-?\d+))?$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const symbol = match[1];
+  const exponent = Number(match[2] ?? 1);
+
+  // Direkte Basiseinheit
+  const directUnit = baseUnits.find(
+    (unit) => unit.toLowerCase() === symbol.toLowerCase()
+  );
+
+  if (directUnit) {
+    return {
+      unit: directUnit,
+      prefix: null,
+      factor: 1,
+      exponent
+    };
+  }
+
+  // Präfix + Basiseinheit
+  const prefixes = Object.entries(unitPrefixes)
+    .sort(([a], [b]) => b.length - a.length);
+
+  for (const [prefix, multiplier] of prefixes) {
+    if (!symbol.startsWith(prefix)) {
+      continue;
+    }
+
+    const base = symbol.slice(prefix.length);
+
+    const matchingUnit = baseUnits.find(
+      (unit) => unit.toLowerCase() === base.toLowerCase()
+    );
+
+    if (!matchingUnit) {
+      continue;
+    }
+
+    return {
+      unit: matchingUnit,
+      prefix,
+      factor: multiplier,
+      exponent
+    };
+  }
+
+  return null;
+};
+const parseUnitExpression = (unit) => {
+  let u = (unit || '')
+    .trim()
+    .replace(/·/g, '*')
     .replace(/\s+/g, '');
 
-const expectedUnit = normalizeUnit(task.unit);
-const enteredUnit = normalizeUnit(userUnit);
+  if (!u) {
+    return null;
+  }
 
-let correctNumber;
+  // Unicode-Hochzahlen
+  const superscriptMap = {
+    '⁰': '0',
+    '¹': '1',
+    '²': '2',
+    '³': '3',
+    '⁴': '4',
+    '⁵': '5',
+    '⁶': '6',
+    '⁷': '7',
+    '⁸': '8',
+    '⁹': '9',
+    '⁻': '-'
+  };
 
-switch (task.operator || '=') {
-  case '>':
-  case '<':
-  case '>=':
-  case '<=':
-  case 'approx':
-  case '=':
-  default:
-    correctNumber =
-      Math.abs(userAnswer - task.answer) <= task.tolerance;
-    break;
+  u = u.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (match) => {
+    const normal = [...match]
+      .map((char) => superscriptMap[char] || char)
+      .join('');
+
+    return `^${normal}`;
+  });
+
+  // Klammern entfernen
+  u = u.replace(/[()]/g, '');
+
+  const slashParts = u.split('/');
+  const factors = [];
+
+  for (let partIndex = 0; partIndex < slashParts.length; partIndex++) {
+    const part = slashParts[partIndex];
+
+    if (!part) continue;
+
+    const sign = partIndex === 0 ? 1 : -1;
+
+    // * trennt Faktoren eindeutig
+    const explicitFactors = part
+      .split('*')
+      .filter(Boolean);
+
+    for (const factor of explicitFactors) {
+      let rest = factor;
+
+      while (rest.length > 0) {
+        let found = false;
+
+        /*
+         * Wir probieren alle bekannten Basiseinheiten
+         * und Präfixe aus und nehmen einen passenden
+         * Anfang des Strings.
+         */
+        const candidates = [];
+
+        // Normale Basiseinheiten
+        for (const baseUnit of baseUnits) {
+          candidates.push({
+            symbol: baseUnit,
+            prefix: null,
+            factor: 1,
+            dimensions: {
+              [baseUnit]: 1
+            }
+          });
+        }
+
+        // Präfix + normale Basiseinheit
+        for (const [prefix, multiplier] of Object.entries(unitPrefixes)) {
+          for (const baseUnit of baseUnits) {
+            candidates.push({
+              symbol: prefix + baseUnit,
+              prefix,
+              factor: multiplier,
+              dimensions: {
+                [baseUnit]: 1
+              }
+            });
+          }
+        }
+
+        // Sonder-Einheiten + Präfixe
+        for (const [specialSymbol, specialUnit] of Object.entries(
+          specialUnitFactors
+        )) {
+          // Sonder-Einheit ohne Präfix
+          candidates.push({
+            symbol: specialSymbol,
+            prefix: null,
+            factor: specialUnit.factor,
+            dimensions: specialUnit.dimensions
+          });
+
+          // Sonder-Einheit mit Präfix
+          for (const [prefix, multiplier] of Object.entries(unitPrefixes)) {
+            candidates.push({
+              symbol: prefix + specialSymbol,
+              prefix,
+              factor: multiplier * specialUnit.factor,
+              dimensions: specialUnit.dimensions
+            });
+          }
+        }
+
+        // Direkte Basiseinheiten zuerst,
+        // danach Präfix + Basiseinheit.
+        // So wird z. B. "N" nicht als "n" + "..." interpretiert.
+        candidates.sort((a, b) => {
+          // Längere Einheit zuerst.
+          // Dadurch wird z. B. "mm" als Millimeter
+          // und nicht als m · m erkannt.
+          if (b.symbol.length !== a.symbol.length) {
+            return b.symbol.length - a.symbol.length;
+          }
+
+          // Bei gleicher Länge direkte Einheit bevorzugen.
+          if (a.prefix === null && b.prefix !== null) {
+            return -1;
+          }
+
+          if (a.prefix !== null && b.prefix === null) {
+            return 1;
+          }
+
+          return 0;
+        });
+        for (const candidate of candidates) {
+          if (!rest.startsWith(candidate.symbol)) {
+            continue;
+          }
+
+          let consumed = candidate.symbol;
+          let exponent = 1;
+
+          // Exponent direkt hinter der Einheit
+          const exponentMatch = rest
+            .slice(consumed.length)
+            .match(/^\^(-?\d+)/);
+
+          if (exponentMatch) {
+            exponent = Number(exponentMatch[1]);
+            consumed += exponentMatch[0];
+          }
+
+          let firstEntry = true;
+
+          for (const [baseUnit, baseExponent] of Object.entries(
+            candidate.dimensions
+          )) {
+            factors.push({
+              unit: baseUnit,
+              prefix: candidate.prefix,
+              factor: firstEntry ? candidate.factor : 1,
+              exponent: exponent * sign,
+              dimensionExponent: baseExponent
+            });
+
+            firstEntry = false;
+          }
+
+          rest = rest.slice(consumed.length);
+
+          found = true;
+          break;
+        }
+
+        if (!found) {
+          return null;
+        }
+      }
+    }
+  }
+
+  return factors;
+};
+const getUnitConversionFactor = (unitExpression) => {
+  if (!unitExpression) return 1;
+  const factors = parseUnitExpression(unitExpression);
+
+  if (!factors) {
+    return null;
+  }
+
+  let totalFactor = 1;
+
+  for (const factor of factors) {
+    totalFactor *= Math.pow(
+      factor.factor,
+      factor.exponent
+    );
+  }
+
+  return totalFactor;
+};
+function getUnitDimension(unitExpression) {
+  if (!unitExpression) return {};
+  const parsed = parseUnitExpression(unitExpression);
+
+  if (!parsed) {
+    return null;
+  }
+
+  const dimensions = {};
+
+  for (const factor of parsed) {
+    const baseUnit = factor.unit;
+    const exponent =
+      (factor.dimensionExponent ?? 1) * factor.exponent;
+
+    dimensions[baseUnit] =
+      (dimensions[baseUnit] || 0) + exponent;
+  }
+
+  // Einheiten mit Exponent 0 entfernen
+  for (const unit of Object.keys(dimensions)) {
+    if (dimensions[unit] === 0) {
+      delete dimensions[unit];
+    }
+  }
+
+  return dimensions;
+}
+function areUnitsEquivalent(unitA, unitB) {
+  const dimensionA = getUnitDimension(unitA);
+  const dimensionB = getUnitDimension(unitB);
+
+  if (!dimensionA || !dimensionB) {
+    return false;
+  }
+
+  const unitsA = Object.keys(dimensionA).sort();
+  const unitsB = Object.keys(dimensionB).sort();
+
+  if (unitsA.length !== unitsB.length) {
+    return false;
+  }
+
+  for (let i = 0; i < unitsA.length; i++) {
+    const unit = unitsA[i];
+
+    if (unit !== unitsB[i]) {
+      return false;
+    }
+
+    if (dimensionA[unit] !== dimensionB[unit]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+function convertUnitValue(value, unit) {
+  const factor = getUnitConversionFactor(unit);
+
+  if (factor === null || !Number.isFinite(factor)) {
+    return null;
+  }
+
+  return value * factor;
+}
+function areAnswersEquivalent(
+  userValue,
+  userUnit,
+  expectedValue,
+  expectedUnit,
+  tolerance = 0,
+  acceptedUnits = []
+) {
+  const normalizedUserUnit = normalizeUnit(userUnit);
+
+  // Haupt-Einheit + alle akzeptierten Alternativen
+  const validUnits = [
+    expectedUnit,
+    ...(Array.isArray(acceptedUnits) ? acceptedUnits : [])
+  ]
+    .map(normalizeUnit)
+    .filter(Boolean);
+
+  // Prüfen, ob die eingegebene Einheit zu einer gültigen Einheit passt
+  const matchingUnit = validUnits.find((validUnit) =>
+    areUnitsEquivalent(
+      normalizedUserUnit,
+      validUnit
+    )
+  );
+
+  if (!matchingUnit) {
+    return false;
+  }
+
+  // Eingabe in die Basiseinheit umrechnen
+  const convertedUserValue = convertUnitValue(
+    userValue,
+    normalizedUserUnit
+  );
+
+  // Erwarteten Wert mit der passenden gültigen Einheit umrechnen
+  const convertedExpectedValue = convertUnitValue(
+    expectedValue,
+    matchingUnit
+  );
+
+  if (
+    convertedUserValue === null ||
+    convertedExpectedValue === null
+  ) {
+    return false;
+  }
+
+  // Toleranz anhand der erwarteten Einheit umrechnen
+  const expectedFactor =
+    getUnitConversionFactor(matchingUnit);
+
+  if (
+    expectedFactor === null ||
+    !Number.isFinite(expectedFactor)
+  ) {
+    return false;
+  }
+
+  const convertedTolerance =
+    Math.abs(tolerance) * expectedFactor;
+
+  return (
+    Math.abs(
+      convertedUserValue - convertedExpectedValue
+    ) <= convertedTolerance
+  );
 }
 
-const correctUnit = enteredUnit === expectedUnit;
-const correct = correctNumber && correctUnit;
+console.log("✅ Einheiten-Testfunktionen bereit");
+
+const expectedUnit = task.unit || '';
+const enteredUnit = userUnit;
+
+const correctUnit = areUnitsEquivalent(enteredUnit, expectedUnit);
+
+let correctNumber = false;
+const tol = Math.abs(task.tolerance || 0);
+
+if (correctUnit) {
+  const convertedUserAnswer = convertUnitValue(userAnswer, enteredUnit);
+  const convertedExpectedAnswer = convertUnitValue(task.answer, expectedUnit);
+
+  if (convertedUserAnswer !== null && convertedExpectedAnswer !== null) {
+    const expectedFactor = getUnitConversionFactor(expectedUnit) ?? 1;
+
+    correctNumber =
+      Math.abs(convertedUserAnswer - convertedExpectedAnswer) <= tol * expectedFactor;
+  }
+} else {
+  // Einheit falsch: Zahl trotzdem roh gegen die erwartete Zahl prüfen,
+  // damit die Rückmeldung "nur die Einheit stimmt nicht" möglich ist
+  correctNumber = Math.abs(userAnswer - task.answer) <= tol;
+}
+
+const correct = correctUnit && correctNumber;
+
 state.exerciseResults[taskId] = correct;
 updateExerciseProgress();
 
 if (correct) {
-  feedback.innerHTML = '<p>Richtig!</p>';
+  input?.classList.add('exercise-answer-correct');
+
+  feedback.innerHTML = `
+    <div class="exercise-answer-feedback-correct">
+      Richtig!
+    </div>
+  `;
 
   const solution = document.querySelector(
     `[data-exercise-solution="${taskId}"]`
@@ -1159,6 +1946,8 @@ if (correct) {
     solution.hidden = false;
   }
 } else {
+  input?.classList.add('exercise-answer-wrong');
+
   if (!correctNumber && !correctUnit) {
     feedback.innerHTML =
       '<p>Zahl und Einheit stimmen noch nicht.</p>';
@@ -1171,6 +1960,7 @@ if (correct) {
   }
 }
 });
+//Back
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-exercise-back]');
   if (!b) return;
@@ -1178,7 +1968,8 @@ document.addEventListener('click', (e) => {
   state.page = 'exercise-lks';
   render();
 });
-  document.addEventListener('click', (e) => {
+//New Task
+document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-exercise-task-new]');
     if (!b) return;
 
@@ -1198,7 +1989,7 @@ document.addEventListener('click', (e) => {
 
         <label>
           Aufgabennummer
-          <input id="exercise-task-number" type="number" min="1" placeholder="1" />
+          <input id="exercise-task-number" type="text" placeholder="z. B. 1, a), b)" />
         </label>
 
         <label>
@@ -1231,6 +2022,17 @@ document.addEventListener('click', (e) => {
           Aufgabenstellung
           <textarea id="exercise-task-question" rows="5" placeholder="Aufgabenstellung"></textarea>
         </label>
+
+        <label>
+          Bild zur Aufgabe
+          <input
+            id="exercise-task-image"
+            type="file"
+            accept="image/png,image/jpeg"
+          />
+          <small class="muted">Optional – PNG oder JPG</small>
+        </label>
+
         <label>
           Antwort / Ergebnis
           <input id="exercise-task-answer" type="number" step="any" placeholder="z. B. 25" />
@@ -1259,19 +2061,19 @@ document.addEventListener('click', (e) => {
     `;
 
     dialog.showModal();
-  });
-  document.addEventListener('click', async (e) => {
+});
+//Save
+document.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-exercise-task-save]');
     if (!b) return;
 
     const dialog = document.querySelector('#formula-dialog');
     const lkId = dialog.dataset.exerciseLkId;
 
-    const taskNumber = Number(
-      document.querySelector('#exercise-task-number')?.value
-    );
+    const taskNumber = document.querySelector('#exercise-task-number')?.value.trim() || '';
     const title = document.querySelector('#exercise-task-title')?.value.trim();
     const question = document.querySelector('#exercise-task-question')?.value.trim();
+    const imageFile = document.querySelector('#exercise-task-image')?.files?.[0] || null;
     const variable = document.querySelector('#exercise-task-variable')?.value.trim();
     const operator = document.querySelector('#exercise-task-operator')?.value;
     const answer = Number(
@@ -1295,6 +2097,34 @@ document.addEventListener('click', (e) => {
     b.disabled = true;
     b.textContent = 'Speichern...';
 
+    let imageUrl = null;
+
+    if (imageFile) {
+      const fileExtension = imageFile.name.split('.').pop().toLowerCase();
+      const fileName = `${crypto.randomUUID()}.${fileExtension}`;
+
+      const { error: uploadError } = await window.supabaseClient
+        .storage
+        .from('exercise-images')
+        .upload(fileName, imageFile);
+
+        if (uploadError) {
+          console.error('Fehler beim Hochladen des Bildes:', uploadError);
+          alert(
+            'Bild-Upload fehlgeschlagen:\n\n' +
+            uploadError.message
+          );
+          return;
+        }
+
+      const { data: publicUrlData } = window.supabaseClient
+        .storage
+        .from('exercise-images')
+        .getPublicUrl(fileName);
+
+      imageUrl = publicUrlData.publicUrl;
+    }
+
     const { error } = await window.supabaseClient
       .from('exercise_tasks')
       .insert({
@@ -1306,6 +2136,7 @@ document.addEventListener('click', (e) => {
         tolerance,
         unit: unit || null,
         solution: solution || '',
+        image_url: imageUrl,
         variable: variable || null,
         operator: operator || '=',
       });
@@ -1321,8 +2152,9 @@ document.addEventListener('click', (e) => {
     dialog.close();
 
     alert('Aufgabe wurde gespeichert.');
-  });
-  document.addEventListener('click', async (e) => {
+});
+//Edit
+document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-task-edit]');
   if (!b) return;
 
@@ -1356,7 +2188,7 @@ document.addEventListener('click', (e) => {
         Aufgabennummer
         <input
           id="exercise-task-number"
-          type="number"
+          type="text"
           value="${task.task_number ?? ''}"
         />
       </label>
@@ -1428,6 +2260,44 @@ document.addEventListener('click', (e) => {
         />
       </label>
 
+      
+      <div class="exercise-image-editor">
+        <label>
+          Bild zur Aufgabe
+          <input
+            id="exercise-task-image"
+            type="file"
+            accept="image/png,image/jpeg"
+          />
+          <small class="muted">Optional – PNG oder JPG</small>
+        </label>
+
+        ${
+          task.image_url
+            ? `
+              <div>
+                <img
+                  src="${task.image_url}"
+                  alt="Aktuelles Aufgabenbild"
+                  style="max-width: 100%; max-height: 250px; object-fit: contain;"
+                />
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input
+                    id="exercise-task-remove-image"
+                    type="checkbox"
+                    style="margin: 0; flex-shrink: 0;"
+                  />
+                  <label for="exercise-task-remove-image" style="margin: 0;">
+                    Vorhandenes Bild löschen
+                  </label>
+                </div>
+              </div>
+            `
+            : '<p class="muted">Noch kein Bild vorhanden.</p>'
+        }
+      </div>
+
       <label>
         Lösungsweg
         <textarea
@@ -1447,16 +2317,20 @@ document.addEventListener('click', (e) => {
 
   dialog.showModal();
 });
+//Update
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-task-update]');
   if (!b) return;
 
   const taskId = b.dataset.exerciseTaskUpdate;
   const dialog = document.querySelector('#formula-dialog');
+  const imageFile =
+    document.querySelector('#exercise-task-image')?.files?.[0] || null;
 
-  const taskNumber = Number(
-    document.querySelector('#exercise-task-number')?.value
-  );
+  const removeImage =
+    document.querySelector('#exercise-task-remove-image')?.checked || false;
+
+  const taskNumber = document.querySelector('#exercise-task-number')?.value.trim() || '';
   const title = document.querySelector('#exercise-task-title')?.value.trim();
   const question = document.querySelector('#exercise-task-question')?.value.trim();
   const variable = document.querySelector('#exercise-task-variable')?.value.trim();
@@ -1480,8 +2354,58 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  b.disabled = true;
+    b.disabled = true;
   b.textContent = 'Speichern...';
+
+  // Bisheriges Bild aus der Datenbank laden
+  const {
+    data: currentTask,
+    error: currentTaskError
+  } = await window.supabaseClient
+    .from('exercise_tasks')
+    .select('image_url')
+    .eq('id', taskId)
+    .single();
+
+  if (currentTaskError) {
+    console.error('Fehler beim Laden des bisherigen Bildes:', currentTaskError);
+    alert('Das bisherige Bild konnte nicht geladen werden.');
+    b.disabled = false;
+    b.textContent = 'Änderungen speichern';
+    return;
+  }
+
+  const oldImageUrl = currentTask.image_url || null;
+  let imageUrl = oldImageUrl;
+  let newImagePath = null;
+
+  // Neues Bild hochladen (hat Vorrang vor "Bild löschen")
+  if (imageFile) {
+    const extension = imageFile.name.split('.').pop().toLowerCase();
+    newImagePath = `${crypto.randomUUID()}.${extension}`;
+
+    const { error: uploadError } = await window.supabaseClient
+      .storage
+      .from('exercise-images')
+      .upload(newImagePath, imageFile);
+
+    if (uploadError) {
+      console.error('Fehler beim Hochladen des Bildes:', uploadError);
+      alert('Das Bild konnte nicht hochgeladen werden: ' + uploadError.message);
+      b.disabled = false;
+      b.textContent = 'Änderungen speichern';
+      return;
+    }
+
+    const { data: publicUrlData } = window.supabaseClient
+      .storage
+      .from('exercise-images')
+      .getPublicUrl(newImagePath);
+
+    imageUrl = publicUrlData.publicUrl;
+  } else if (removeImage) {
+    imageUrl = null;
+  }
 
   const { error } = await window.supabaseClient
     .from('exercise_tasks')
@@ -1495,15 +2419,47 @@ document.addEventListener('click', async (e) => {
       tolerance,
       unit: unit || null,
       solution: solution || '',
+      image_url: imageUrl,
     })
     .eq('id', taskId);
 
   if (error) {
     console.error('Fehler beim Aktualisieren der Aufgabe:', error);
+
+    // Falls das neue Bild bereits hochgeladen wurde, wieder entfernen
+    if (newImagePath) {
+      await window.supabaseClient
+        .storage
+        .from('exercise-images')
+        .remove([newImagePath]);
+    }
+
     alert('Fehler beim Speichern: ' + error.message);
     b.disabled = false;
     b.textContent = 'Änderungen speichern';
     return;
+  }
+
+  // Altes Bild erst nach erfolgreichem Speichern entfernen
+  if (oldImageUrl && oldImageUrl !== imageUrl) {
+    const marker = '/storage/v1/object/public/exercise-images/';
+    const markerIndex = oldImageUrl.indexOf(marker);
+
+    // Nur Bilder aus unserem eigenen Bucket löschen
+    if (markerIndex !== -1) {
+      const oldImagePath = decodeURIComponent(
+        oldImageUrl.slice(markerIndex + marker.length)
+      );
+
+      const { error: removeError } = await window.supabaseClient
+        .storage
+        .from('exercise-images')
+        .remove([oldImagePath]);
+
+      if (removeError) {
+        console.warn('Altes Bild konnte nicht entfernt werden:', removeError);
+      }
+    }
   }
 
   dialog?.close();
@@ -1516,17 +2472,17 @@ if (lkId) {
     .from('exercise_tasks')
     .select('*')
     .eq('lk_id', lkId)
-    .order('task_number', { ascending: true });
 
   if (error) {
     console.error('Fehler beim Neuladen der Aufgaben:', error);
     return;
   }
 
-  renderExerciseTasks(tasks);
+  renderExerciseTasks(sortExerciseTasks(tasks));
 }
 
 });
+//Delete
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-task-delete]');
   if (!b) return;
@@ -1565,14 +2521,14 @@ if (lkId) {
     .from('exercise_tasks')
     .select('*')
     .eq('lk_id', lkId)
-    .order('task_number', { ascending: true });
 
   if (!error) {
-    renderExerciseTasks(tasks);
+    renderExerciseTasks(sortExerciseTasks(tasks));
     }
   }
 }
 );
+//Toggle
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-lk-toggle]');
   if (!b) return;
@@ -1606,6 +2562,7 @@ document.addEventListener('click', async (e) => {
 
   await loadExerciseLks();
 });
+//Edit
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-lk-edit]');
   if (!b) return;
@@ -1664,6 +2621,7 @@ document.addEventListener('click', async (e) => {
 
   dialog.showModal();
 });
+// Update
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-lk-update]');
   if (!b) return;
@@ -1709,6 +2667,7 @@ document.addEventListener('click', async (e) => {
 
   await loadExerciseLks();
 });
+// Delete
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('[data-exercise-lk-delete]');
   if (!b) return;
@@ -1985,13 +2944,7 @@ document.addEventListener('click', async (e) => {
     }
   } else if (b.id === 'calculate') {
     const s = document.querySelector('#calc-select').value;
-    const opts = [
-      ['Kinetische Energie', 'E_{kin}', 'm,v', '0.5*m*v*v', 'J'],
-      ['Gewichtskraft', 'F_G', 'm,g', 'm*g', 'N'],
-      ['Ohmsches Gesetz', 'U', 'R,I', 'R*I', 'V'],
-      ['Elektrische Leistung', 'P', 'U,I', 'U*I', 'W'],
-      ['Wärmemenge', 'Q', 'm,c,dT', 'm*c*dT', 'J'],
-    ][s];
+    const opts = calcOptions[s];
     const v = {};
     document.querySelectorAll('[data-calc]').forEach((x) => (v[x.dataset.calc] = Number(x.value)));
     if (
@@ -2000,8 +2953,23 @@ document.addEventListener('click', async (e) => {
     )
       return toast('Bitte alle Werte eingeben.');
     const result = Function(...Object.keys(v), `return ${opts[3]}`)(...Object.values(v));
-    document.querySelector('#calc-result').innerHTML =
-      `${opts[1]} = <strong>${Number(result.toFixed(6))} ${opts[4]}</strong>`;
+    const resultElement = document.querySelector('#calc-result');
+
+    resultElement.innerHTML = `
+      <div class="calc-result-formula">
+        \\(${opts[1]} = ${Number(result.toFixed(6))}\\,\\mathrm{${opts[4]}}\\)
+      </div>
+    `;
+
+    if (window.renderMathInElement) {
+      renderMathInElement(resultElement, {
+        delimiters: [
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false
+      });
+    }
   }
 });
 document.addEventListener('input', (e) => {
@@ -2041,7 +3009,7 @@ document.addEventListener('change', (e) => {
   }
   if (e.target.id === 'calc-select') calcArea();
 });
-  document.querySelector('#import-file').addEventListener('change', async (e) => {
+document.querySelector('#import-file').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -2128,7 +3096,7 @@ document.addEventListener('change', (e) => {
     }
 
     e.target.value = '';
-  });
+});
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.activeElement?.id === 'global-search') {
     state.query = '';

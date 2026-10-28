@@ -148,3 +148,9 @@ body.light .filters select {
 .side-footer .mode + .mode {
   margin-top: 8px;
 }
+
+body.light .result {
+  background: #eef4fa;
+  color: #071725;
+  border: 1px solid #b7c6d8;
+}
